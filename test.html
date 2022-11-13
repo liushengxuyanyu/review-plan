@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h1 id="myH">我是一个h1</h1>
+  <script>
+
+    function render(val) {
+      myH.innerHTML = val
+      console.log('---- 视图更新 ----')
+    }
+
+    // 代理
+    function proxyFn(target, sourcekey, key) {
+      Object.defineProperty(target, key, {
+        enumerable: true,
+        configurable: true,
+        get() {
+          return target[sourcekey][key]
+        },
+        set(newVal) {
+          target[sourcekey][key] = newVal
+        }
+      })
+    }
+
+    // 响应式
+    function defineReactive (obj, key, val) {
+        Object.defineProperty(obj, key, {
+            enumerable: true,       /* 属性可枚举 */
+            configurable: true,     /* 属性可被修改或删除 */
+            get: function reactiveGetter () {
+                return val;         /* 实际上会依赖收集，下一小节会讲 */
+            },
+            set: function reactiveSetter (newVal) {
+                if (newVal === val) return;
+                render(newVal);
+            }
+        });
+    }
+
+    // 响应式入口
+    function observer (value) {
+        if (!value || (typeof value !== 'object')) {
+            return;
+        }
+        
+        Object.keys(value).forEach((key) => {
+            defineReactive(value, key, value[key]);
+        });
+    }
+
+    
+    // vue类
+    class Vue {
+        /* Vue构造类 */
+        constructor(options) {
+            this._data = options.data;
+            observer(this._data);
+            Object.keys(this._data).forEach(key => {
+              proxyFn(this, '_data', key)
+            })
+        }
+    }
+
+    let vm = new Vue({
+        data: {
+            test: "I am test."
+        }
+    });
+    // o._data.test = "hello,world.";  /* 视图更新啦～ */
+
+
+  </script>
+</body>
+</html>

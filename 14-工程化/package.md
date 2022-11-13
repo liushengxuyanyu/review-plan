@@ -1,0 +1,6 @@
+## peerDependencies的作用？
+用于放置当前package中使用的依赖，而且会在引用的项目中会存在的依赖。放在peerDependencies中的依赖不会再当前package中下载，而会使用引用的项目中的依赖。
+
+如果package中放在peerDependencies的依赖，但是项目中不存在依赖，同样会报错。
+
+比如：项目A中存在react，package B是一个基于react的依赖包，package B 就不需要自己安装一份react，因为使用它的项目A必然存在react。

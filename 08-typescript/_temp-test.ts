@@ -1,0 +1,1 @@
+console.log('我是一个ts文件')
